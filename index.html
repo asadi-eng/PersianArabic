@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مترجم فارسی ⇄ عربی</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#faf9f7;--card:#fff;--chip:#efeeeb;--text:#2b2a28;--muted:#77746e;--accent:#c97a5d;--btn:#141413;--btn-t:#fff;--line:#e6e4df;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1e1c;--card:#2a2927;--chip:#353432;--text:#f0eee9;--muted:#a09c94;--accent:#d98b6e;--btn:#f0eee9;--btn-t:#1f1e1c;--line:#3d3b38}}
+:root[data-theme="dark"]{--bg:#1f1e1c;--card:#2a2927;--chip:#353432;--text:#f0eee9;--muted:#a09c94;--accent:#d98b6e;--btn:#f0eee9;--btn-t:#1f1e1c;--line:#3d3b38}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:40px 18px 32px;display:flex;flex-direction:column;align-items:center}
+.logo{width:44px;height:44px;color:var(--accent);margin-bottom:14px}
+h1{font-size:clamp(26px,6vw,34px);font-weight:500;margin:0 0 6px;text-align:center}
+.sub{color:var(--muted);font-size:15px;margin:0 0 28px;text-align:center}
+.langs{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pill{background:var(--chip);border-radius:999px;padding:9px 22px;font-size:15px;font-weight:500;min-width:96px;text-align:center}
+.swap{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:18px;display:grid;place-items:center;transition:transform .25s}
+.swap:active{transform:rotate(180deg)}
+.box{width:100%;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:16px 18px;margin-bottom:12px;box-shadow:0 4px 18px rgba(0,0,0,.04)}
+textarea{width:100%;min-height:130px;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:inherit;font-size:18px;line-height:1.9}
+textarea::placeholder{color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.count{color:var(--muted);font-size:13px}
+.go{background:var(--btn);color:var(--btn-t);border:0;border-radius:999px;padding:11px 26px;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.go:disabled{opacity:.45;cursor:default}
+.left{display:flex;align-items:center;gap:12px}
+.mic{width:46px;height:46px;border-radius:50%;border:0;background:var(--chip);color:var(--text);cursor:pointer;display:grid;place-items:center}
+.mic svg{width:22px;height:22px}
+.mic.rec{background:#d9534f;color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,83,79,.5)}100%{box-shadow:0 0 0 14px rgba(217,83,79,0)}}
+.ghost{background:var(--chip);color:var(--text);border:0;border-radius:999px;padding:8px 16px;font:inherit;font-size:13px;cursor:pointer}
+#out{min-height:90px;font-size:19px;line-height:2;white-space:pre-wrap;word-break:break-word}
+#out.ph{color:var(--muted);font-size:15px}
+.err{color:#c0392b;font-size:14px;text-align:center;margin-top:4px}
+footer{color:var(--muted);font-size:12px;margin-top:18px;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <svg class="logo" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M24 4v14M24 30v14M4 24h14M30 24h14M10 10l10 10M28 28l10 10M38 10L28 20M20 28L10 38"/></svg>
+  <h1>مترجم فارسی و عربی</h1>
+  <p class="sub">متن را بنویسید؛ ترجمه‌ی دقیق و روان بگیرید.</p>
+
+  <div class="langs">
+    <div class="pill" id="from">فارسی</div>
+    <button class="swap" id="swap" aria-label="جابه‌جایی زبان‌ها">⇄</button>
+    <div class="pill" id="to">العربية</div>
+  </div>
+
+  <div class="box">
+    <textarea id="src" placeholder="متن فارسی را اینجا بنویسید…" dir="rtl"></textarea>
+    <div class="row">
+      <div class="left"><button class="mic" id="mic" aria-label="ورودی صوتی"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><span class="count" id="cnt">۰ / ۳۰۰۰</span></div>
+      <button class="go" id="go" disabled>ترجمه</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <div id="out" class="ph" dir="rtl">ترجمه اینجا نمایش داده می‌شود.</div>
+    <div class="row">
+      <span></span>
+      <button class="ghost" id="copy" hidden>کپی</button>
+    </div>
+  </div>
+  <div class="err" id="err"></div>
+  <footer>ترجمه با سرویس MyMemory انجام می‌شود؛ برای متن‌های رسمی یا حقوقی حتماً بازبینی کنید.</footer>
+</main>
+
+<script>
+(function(){
+  var fa = true; // true: Persian -> Arabic
+  var $ = function(id){return document.getElementById(id)};
+  var src=$('src'), out=$('out'), go=$('go'), err=$('err'), cp=$('copy'), cnt=$('cnt');
+  var sample=null, ctrl=null;
+  var MAX=3000;
+  function toFa(n){return String(n).replace(/\d/g,function(d){return '۰۱۲۳۴۵۶۷۸۹'[d]})}
+
+  function setDir(){
+    $('from').textContent = fa ? 'فارسی' : 'العربية';
+    $('to').textContent = fa ? 'العربية' : 'فارسی';
+    src.placeholder = fa ? 'متن فارسی را اینجا بنویسید…' : 'اكتب النص العربي هنا…';
+  }
+  function upd(){
+    var n=src.value.length;
+    cnt.textContent = toFa(n)+' / '+toFa(MAX);
+    go.disabled = !src.value.trim() || n>MAX || !sample;
+  }
+  src.addEventListener('input',upd);
+  $('swap').addEventListener('click',function(){
+    fa=!fa; setDir();
+    var t=out.dataset.val||'';
+    if(t){src.value=t; out.textContent='ترجمه اینجا نمایش داده می‌شود.'; out.className='ph'; out.dataset.val=''; cp.hidden=true;}
+    upd();
+  });
+
+  go.addEventListener('click', async function(){
+    if(!sample) return;
+    err.textContent='';
+    if(ctrl) ctrl.abort();
+    ctrl=new AbortController();
+    go.disabled=true; go.textContent='در حال ترجمه…';
+    out.className=''; out.textContent='…'; cp.hidden=true;
+    var pair=fa?'fa|ar':'ar|fa';
+    function chunks(line){
+      var parts=line.split(/(?<=[.!?؟؛۔])\s+/), out=[], cur='';
+      parts.forEach(function(p){
+        while(p.length>450){ if(cur){out.push(cur);cur='';} out.push(p.slice(0,450)); p=p.slice(450); }
+        if((cur+' '+p).trim().length>450){ out.push(cur); cur=p; } else { cur=(cur+' '+p).trim(); }
+      });
+      if(cur) out.push(cur);
+      return out;
+    }
+    async function tr(q){
+      var resp=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(q)+'&langpair='+encodeURIComponent(pair),{signal:ctrl.signal});
+      if(resp.status===429){var e1=new Error('rate');e1.code='rate_limited';throw e1;}
+      var j=await resp.json();
+      if(String(j.responseStatus)==='429'){var e2=new Error('rate');e2.code='rate_limited';throw e2;}
+      if(String(j.responseStatus)!=='200'){throw new Error('fail');}
+      return (j.responseData.translatedText||'').replace(/&#39;/g,"’").replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+    }
+    var lines=src.value.trim().split('\n'), done=[], res='';
+    try{
+      for(var li=0;li<lines.length;li++){
+        var ln=lines[li].trim();
+        if(!ln){done.push('');continue;}
+        var cs=chunks(ln), outParts=[];
+        for(var ci=0;ci<cs.length;ci++){
+          outParts.push(await tr(cs[ci]));
+          out.textContent=done.concat([outParts.join(' ')]).join('\n');
+        }
+        done.push(outParts.join(' '));
+      }
+      res=done.join('\n');
+      var r={text:res};
+      var txt=(r.text||'').trim();
+      out.textContent=txt; out.dataset.val=txt; cp.hidden=!txt;
+    }catch(e){
+      out.className='ph'; out.textContent='ترجمه اینجا نمایش داده می‌شود.';
+      if(e && e.name!=='AbortError'){
+        err.textContent = e.code==='rate_limited' ? 'سهمیه‌ی رایگان سرویس تمام شده؛ کمی بعد دوباره تلاش کنید.' :
+                          e.code==='not_granted' ? 'برای ترجمه باید اجازه‌ی دسترسی را تأیید کنید.' : 'خطایی رخ داد. دوباره تلاش کنید.';
+      }
+    }finally{
+      go.textContent='ترجمه'; upd();
+    }
+  });
+
+  cp.addEventListener('click',function(){
+    var t=out.dataset.val||'';
+    try{
+      navigator.clipboard.writeText(t).then(function(){cp.textContent='کپی شد ✓';setTimeout(function(){cp.textContent='کپی'},1500)});
+    }catch(e){
+      var r=document.createRange();r.selectNodeContents(out);var s=getSelection();s.removeAllRanges();s.addRange(r);
+    }
+  });
+
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=$('mic');
+  if(!SR){mic.hidden=true}else{
+    var rec=null, on=false, base='';
+    mic.addEventListener('click',function(){
+      if(on){rec.stop();return;}
+      err.textContent='';
+      rec=new SR();
+      rec.lang=fa?'fa-IR':'ar-SA';
+      rec.interimResults=true; rec.continuous=true;
+      base=src.value.trim()?src.value.trim()+' ':'';
+      rec.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++){t+=e.results[i][0].transcript}src.value=(base+t).slice(0,MAX);upd();};
+      rec.onerror=function(e){
+        if(e.error==='not-allowed'||e.error==='service-not-allowed'){err.textContent='دسترسی به میکروفون مجاز نیست. صفحه را در مرورگر باز کنید و اجازه‌ی میکروفون بدهید.';}
+        else if(e.error!=='no-speech'&&e.error!=='aborted'){err.textContent='ضبط صدا با مشکل روبه‌رو شد.';}
+      };
+      rec.onend=function(){on=false;mic.classList.remove('rec');upd();if(!go.disabled&&src.value.trim()&&!err.textContent){go.click();}};
+      try{rec.start();on=true;mic.classList.add('rec');}catch(x){}
+    });
+    $('swap').addEventListener('click',function(){if(on){rec.abort();}});
+  }
+  upd();
+  sample=true; upd();
+})();
+</script>
+</body>
+</html>
