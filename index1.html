@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مترجم فارسی و عربی</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
+<style>
+:root{--hdr:rgba(247,247,247,.88);--bg1:#dfe9d5;--bg2:#c3dbc9;--in:#fff;--out:#effdde;--text:#111;--muted:#8a8f94;--accent:#3390ec;--field:#fff;--line:rgba(0,0,0,.08);--chip:#e9e9ec;--tick:#4fae4e}
+@media (prefers-color-scheme:dark){:root{--hdr:rgba(23,33,43,.88);--bg1:#0e1621;--bg2:#0b121b;--in:#182533;--out:#2b5278;--text:#f2f4f6;--muted:#8d9aa6;--accent:#4ea4f6;--field:#17212b;--line:rgba(255,255,255,.08);--chip:#232e3c;--tick:#7dd37c}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:"Vazirmatn",-apple-system,system-ui,"Segoe UI",Tahoma,sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg1),var(--bg2));display:flex;flex-direction:column;height:100dvh;max-width:720px;margin:0 auto;position:relative}
+header{background:var(--hdr);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;border-bottom:1px solid var(--line);z-index:5}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#4ea4f6,#2d6fd0);display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px;flex:none}
+.ttl{flex:1;text-align:center;line-height:1.35}
+.ttl b{font-size:17px;font-weight:700;display:block}
+.ttl span{font-size:12.5px;color:var(--accent)}
+.tabs{display:flex;gap:6px;background:var(--chip);border-radius:999px;padding:4px;margin-top:10px}
+.tab{flex:1;border:0;background:transparent;color:var(--text);font:inherit;font-size:14px;padding:7px 8px;border-radius:999px;cursor:pointer}
+.tab.on{background:var(--field);box-shadow:0 1px 4px rgba(0,0,0,.12);font-weight:700}
+#chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth}
+.m{max-width:82%;padding:7px 11px 5px;border-radius:18px;font-size:17px;line-height:1.85;position:relative;word-break:break-word;white-space:pre-wrap;box-shadow:0 1px 1px rgba(0,0,0,.08)}
+.m .t{unicode-bidi:plain-text}
+.m.in{align-self:flex-start;background:var(--in);border-bottom-left-radius:5px}
+.m.out{align-self:flex-end;background:var(--out);border-bottom-right-radius:5px}
+.meta{display:flex;justify-content:flex-end;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);margin-top:1px;white-space:normal}
+.m.out .meta{color:var(--tick)}
+.cp{background:none;border:0;color:var(--accent);font:inherit;font-size:12px;cursor:pointer;padding:0}
+.m.err{color:#e5484d;font-size:14.5px}
+.dots{display:inline-flex;gap:4px;padding:6px 2px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.bar{display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(env(safe-area-inset-bottom,0px) + 8px);background:var(--hdr);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.field{flex:1;background:var(--field);border:1px solid var(--line);border-radius:22px;padding:6px 14px}
+textarea{width:100%;border:0;outline:0;resize:none;background:transparent;color:var(--text);font:inherit;font-size:17px;line-height:1.7;max-height:140px;display:block}
+textarea::placeholder{color:var(--muted)}
+.act{width:44px;height:44px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.act svg{width:22px;height:22px}
+.act.mic{background:transparent;color:var(--muted)}
+.act.rec{background:#e5484d;color:#fff;animation:p 1.2s infinite}
+@keyframes p{0%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}100%{box-shadow:0 0 0 14px rgba(229,72,77,0)}}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:7px 16px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="ava">ت</div>
+    <div class="ttl" dir="rtl"><b>مترجم فارسی و عربی</b><span id="status">فارسی ← عربی</span></div>
+    <div class="ava" style="visibility:hidden"></div>
+  </div>
+  <div class="tabs" dir="rtl">
+    <button class="tab on" id="t1">فارسی ← عربی</button>
+    <button class="tab" id="t2">عربی ← فارسی</button>
+  </div>
+</header>
+
+<div id="chat">
+  <div class="m in" dir="rtl"><div class="t">سلام! 👋 متن یا صدایتان را بفرستید تا ترجمه کنم.<br>جهت ترجمه را از بالا انتخاب کنید. برای ورودی صوتی، روی میکروفون بزنید.</div></div>
+</div>
+
+<div class="bar" dir="ltr">
+  <div class="field"><textarea id="src" rows="1" dir="auto" placeholder="پیام"></textarea></div>
+  <button class="act mic" id="act" aria-label="میکروفون">
+    <svg id="icMic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    <svg id="icSend" style="display:none" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.3 10.1 15 12 3.3 13.9z"/></svg>
+  </button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var fa=true, busy=false, MAX=3000;
+  var chat=$('chat'), src=$('src'), act=$('act'), toastEl=$('toast');
+  var ctrl=null;
+
+  function toast(t){toastEl.textContent=t;toastEl.classList.add('show');setTimeout(function(){toastEl.classList.remove('show')},1600)}
+  function now(){return new Date().toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})}
+  function scroll(){chat.scrollTop=chat.scrollHeight}
+
+  function setDir(v){
+    fa=v;
+    $('t1').classList.toggle('on',v);$('t2').classList.toggle('on',!v);
+    $('status').textContent=v?'فارسی ← عربی':'عربی ← فارسی';
+    src.placeholder=v?'پیام':'رسالة';
+    src.focus();
+  }
+  $('t1').onclick=function(){setDir(true)};
+  $('t2').onclick=function(){setDir(false)};
+
+  function bubble(cls,text,withMeta){
+    var d=document.createElement('div');d.className='m '+cls;
+    var t=document.createElement('div');t.className='t';t.dir='auto';t.textContent=text;d.appendChild(t);
+    if(withMeta){
+      var m=document.createElement('div');m.className='meta';m.dir='rtl';
+      if(cls==='in'){
+        var b=document.createElement('button');b.className='cp';b.textContent='کپی';
+        b.onclick=function(){copy(t.textContent)};m.appendChild(b);
+      }
+      var s=document.createElement('span');s.textContent=now()+(cls==='out'?' ✓✓':'');m.appendChild(s);
+      d.appendChild(m);
+    }
+    chat.appendChild(d);scroll();return d;
+  }
+  function copy(t){
+    try{navigator.clipboard.writeText(t).then(function(){toast('کپی شد')},function(){toast('کپی نشد')})}catch(e){toast('کپی نشد')}
+  }
+
+  // ----- translation (MyMemory) -----
+  function chunks(line){
+    var parts=line.split(/(?<=[.!?؟؛۔])\s+/),res=[],cur='';
+    parts.forEach(function(p){
+      while(p.length>450){if(cur){res.push(cur);cur='';}res.push(p.slice(0,450));p=p.slice(450);}
+      if((cur+' '+p).trim().length>450){res.push(cur);cur=p;}else{cur=(cur+' '+p).trim();}
+    });
+    if(cur)res.push(cur);return res;
+  }
+  async function tr(q,pair){
+    var r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(q)+'&langpair='+encodeURIComponent(pair),{signal:ctrl.signal});
+    if(r.status===429){var e=new Error('rate');e.code='rate';throw e}
+    var j=await r.json();
+    if(String(j.responseStatus)==='429'){var e2=new Error('rate');e2.code='rate';throw e2}
+    if(String(j.responseStatus)!=='200')throw new Error('fail');
+    return (j.responseData.translatedText||'').replace(/&#39;/g,'’').replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+  }
+  async function translate(text,pair,onProgress){
+    var lines=text.split('\n'),done=[];
+    for(var i=0;i<lines.length;i++){
+      var ln=lines[i].trim();
+      if(!ln){done.push('');continue;}
+      var cs=chunks(ln),parts=[];
+      for(var k=0;k<cs.length;k++){parts.push(await tr(cs[k],pair));onProgress(done.concat([parts.join(' ')]).join('\n'));}
+      done.push(parts.join(' '));
+    }
+    return done.join('\n').trim();
+  }
+
+  async function send(){
+    var text=src.value.trim();
+    if(!text||busy)return;
+    if(text.length>MAX){toast('حداکثر ۳۰۰۰ نویسه');return}
+    busy=true;
+    var pair=fa?'fa|ar':'ar|fa';
+    bubble('out',text,true);
+    src.value='';grow();upd();
+    var d=document.createElement('div');d.className='m in';
+    d.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+    chat.appendChild(d);scroll();
+    ctrl=new AbortController();
+    try{
+      var res=await translate(text,pair,function(p){d.innerHTML='';var t=document.createElement('div');t.className='t';t.dir='auto';t.textContent=p;d.appendChild(t);scroll();});
+      d.remove();bubble('in',res||'…',true);
+    }catch(e){
+      d.remove();
+      var m=bubble('in err',e.code==='rate'?'سهمیه‌ی رایگان سرویس تمام شده؛ کمی بعد دوباره تلاش کنید.':'ترجمه انجام نشد. اینترنت را بررسی و دوباره تلاش کنید.',false);m.dir='rtl';
+    }
+    busy=false;
+  }
+
+  // ----- composer -----
+  function grow(){src.style.height='auto';src.style.height=Math.min(src.scrollHeight,140)+'px'}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,on=false,base='';
+  function upd(){
+    var has=!!src.value.trim();
+    $('icMic').style.display=has?'none':'';$('icSend').style.display=has?'':'none';
+    act.classList.toggle('mic',!has&&!on);
+  }
+  src.addEventListener('input',function(){grow();upd()});
+  src.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey&&window.matchMedia('(pointer:fine)').matches){e.preventDefault();send()}
+  });
+
+  function startVoice(){
+    if(!SR){toast('مرورگر شما از ورودی صوتی پشتیبانی نمی‌کند');return}
+    var failed=false;
+    rec=new SR();rec.lang=fa?'fa-IR':'ar-SA';rec.interimResults=true;rec.continuous=true;
+    base=src.value.trim()?src.value.trim()+' ':'';
+    rec.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;src.value=(base+t).slice(0,MAX);grow();upd()};
+    rec.onerror=function(e){
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){failed=true;toast('اجازه‌ی میکروفون داده نشده')}
+      else if(e.error!=='no-speech'&&e.error!=='aborted'){failed=true;toast('ضبط صدا ناموفق بود')}
+    };
+    rec.onend=function(){on=false;act.classList.remove('rec');upd();if(!failed&&src.value.trim())send()};
+    try{rec.start();on=true;act.classList.remove('mic');act.classList.add('rec')}catch(x){}
+  }
+  act.addEventListener('click',function(){
+    if(on){rec.stop();return}
+    if(src.value.trim())send();else startVoice();
+  });
+  upd();
+})();
+</script>
+</body>
+</html>
