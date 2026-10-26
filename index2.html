@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cfe5ff">
+<title>مترجم فارسی و عربی</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
+<style>
+/* shadcn-style tokens, mapped to Material 3 (Material You) color roles */
+:root{
+  --radius:1.25rem;
+  --background:#f8f9ff;--foreground:#191c20;
+  --card:#eceef4;--card-foreground:#191c20;
+  --primary:#00629d;--primary-foreground:#ffffff;
+  --primary-container:#cfe5ff;--on-primary-container:#001d33;
+  --secondary:#d7e3f7;--secondary-foreground:#101c2b;
+  --muted:#e1e2e8;--muted-foreground:#43474e;
+  --destructive:#ba1a1a;--border:#c3c7cf;--ring:#00629d;
+  --inverse-surface:#2e3135;--inverse-on-surface:#eff0f7;
+  --glass:rgba(255,255,255,.42);--glass-strong:rgba(255,255,255,.62);
+  --glass-edge:rgba(255,255,255,.7);--glass-shadow:rgba(0,40,80,.16);
+  --blob1:#7cc4ff;--blob2:#c9a8ff;--blob3:#8ff0d0;
+}
+@media (prefers-color-scheme:dark){:root{
+  --background:#101418;--foreground:#e0e2e8;
+  --card:#1c2024;--card-foreground:#e0e2e8;
+  --primary:#99cbff;--primary-foreground:#003354;
+  --primary-container:#004a77;--on-primary-container:#cfe5ff;
+  --secondary:#3b4858;--secondary-foreground:#d7e3f7;
+  --muted:#32363d;--muted-foreground:#c3c7cf;
+  --destructive:#ffb4ab;--border:#43474e;--ring:#99cbff;
+  --inverse-surface:#e0e2e8;--inverse-on-surface:#2e3135;
+  --glass:rgba(40,48,58,.45);--glass-strong:rgba(50,60,72,.62);
+  --glass-edge:rgba(255,255,255,.22);--glass-shadow:rgba(0,0,0,.5);
+  --blob1:#1d5c94;--blob2:#5b3f93;--blob3:#14705b;
+}}
+html,body{height:100%;margin:0}
+body{height:100dvh}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:720px;margin:0 auto}
+#chat{flex:1;overflow-y:auto;scroll-behavior:smooth}
+
+/* ---------- Liquid glass ---------- */
+.glass{position:relative;background:var(--glass);
+  -webkit-backdrop-filter:blur(24px) saturate(190%) brightness(1.05);backdrop-filter:blur(24px) saturate(190%) brightness(1.05);
+  border:1px solid var(--glass-edge);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),inset 0 -1px 1px rgba(255,255,255,.12),inset 1px 0 0 rgba(255,255,255,.18),0 10px 30px var(--glass-shadow)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.38) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,0) 65%,rgba(255,255,255,.14) 100%)}
+.glass>*{position:relative}
+.glass-strong{background:var(--glass-strong)}
+.bubble.out{background:color-mix(in srgb,var(--primary-container) 62%,transparent)}
+.bubble.in{background:var(--glass-strong)}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--background)}
+.bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.85;animation:drift 22s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:360px;height:360px;background:var(--blob1);top:-80px;left:-60px}
+.bg i:nth-child(2){width:320px;height:320px;background:var(--blob2);top:35%;right:-90px;animation-duration:28s}
+.bg i:nth-child(3){width:340px;height:340px;background:var(--blob3);bottom:-100px;left:15%;animation-duration:25s}
+@keyframes drift{to{transform:translate(40px,-50px) scale(1.15)}}
+
+/* ---------- Material 3 state layer + shape ---------- */
+.state{position:relative;overflow:hidden}
+.state::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s;pointer-events:none}
+.state:hover::after{opacity:.08}.state:active::after{opacity:.14}
+.state:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.seg.on{background:var(--secondary);color:var(--secondary-foreground);font-weight:700}
+.fab.rec{background:var(--destructive);color:#fff;animation:pulse 1.3s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}100%{box-shadow:0 0 0 16px rgba(229,72,77,0)}}
+.dots i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted-foreground);margin:0 2px;animation:b 1.2s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.snack{transition:opacity .2s,transform .2s;opacity:0;transform:translate(-50%,10px);pointer-events:none}
+.snack.show{opacity:1;transform:translate(-50%,0)}
+textarea{background:transparent;outline:none;resize:none}
+
+/* ---------- Static utility CSS (replaces the Tailwind CDN script) ---------- */
+*,::before,::after{box-sizing:border-box;border:0 solid var(--border)}
+body{margin:0}
+button{font:inherit;color:inherit;background:transparent;border:0;padding:0;cursor:pointer}
+textarea{font:inherit;color:inherit;margin:0;padding:0;border:0}
+svg{display:block}
+.font-sans{font-family:"Vazirmatn",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.bg-background{background-color:var(--background)}.text-foreground{color:var(--foreground)}
+.bg-inverse{background-color:var(--inverse-surface)}.text-inverse-foreground{color:var(--inverse-on-surface)}
+.bg-primary{background-color:var(--primary)}.text-primary-foreground{color:var(--primary-foreground)}.text-primary{color:var(--primary)}
+.bg-primary-container{background-color:var(--primary-container)}.text-primary-on{color:var(--on-primary-container)}
+.text-muted-foreground{color:var(--muted-foreground)}.ph-muted::placeholder{color:var(--muted-foreground)}
+.border{border-width:1px}.border-border{border-color:var(--border)}.border-r{border-right-width:1px}
+.fixed{position:fixed}.left-half{left:50%}.bottom-28{bottom:7rem}.z-10{z-index:10}
+.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}
+.flex-1{flex:1 1 0%}.flex-col{flex-direction:column}.shrink-0{flex-shrink:0}
+.items-center{align-items:center}.items-end{align-items:flex-end}.justify-center{justify-content:center}.justify-end{justify-content:flex-end}.place-items-center{place-items:center}
+.self-start{align-self:flex-start}.self-end{align-self:flex-end}
+.gap-1{gap:.25rem}.gap-15{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}
+.mx-3{margin-left:.75rem;margin-right:.75rem}.mt-05{margin-top:.125rem}.mt-3{margin-top:.75rem}
+.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}
+.py-05{padding-top:.125rem;padding-bottom:.125rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-25{padding-top:.625rem;padding-bottom:.625rem}.py-4{padding-top:1rem;padding-bottom:1rem}
+.pt-2{padding-top:.5rem}.pt-25{padding-top:.625rem}.pt-3{padding-top:.75rem}.pb-3{padding-bottom:.75rem}.pb-15{padding-bottom:.375rem}
+.hdr{margin-top:calc(env(safe-area-inset-top,0px) + 10px)}
+.compose{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+.size-11{width:2.75rem;height:2.75rem}.size-14{width:3.5rem;height:3.5rem}.size-35{width:.875rem;height:.875rem}.size-4{width:1rem;height:1rem}.size-6{width:1.5rem;height:1.5rem}
+.w-full{width:100%}.max-w-84{max-width:84%}.max-h-36{max-height:9rem}.overflow-hidden{overflow:hidden}
+.r-18{border-radius:18px}.r-22{border-radius:22px}.r-28{border-radius:28px}.rounded-2xl{border-radius:1rem}.rounded-xl{border-radius:.75rem}.rounded-full{border-radius:9999px}
+.rounded-bl-md{border-bottom-left-radius:.375rem}.rounded-br-md{border-bottom-right-radius:.375rem}
+.fs-115{font-size:11.5px}.fs-12{font-size:12px}.fs-13{font-size:13px}.fs-145{font-size:14.5px}.fs-165{font-size:16.5px}.fs-17{font-size:17px}.fs-20{font-size:20px}.text-sm{font-size:.875rem;line-height:1.25rem}
+.font-bold{font-weight:700}.leading-8{line-height:2rem}.leading-snug{line-height:1.375}
+.whitespace-pre-wrap{white-space:pre-wrap}.break-words{overflow-wrap:break-word}
+.shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.18),0 4px 6px -4px rgba(0,0,0,.18)}
+.transition-transform{transition:transform .15s}.press:active{transform:scale(.95)}
+</style>
+</head>
+<body class="font-sans bg-background text-foreground antialiased">
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div id="app">
+  <!-- Top app bar (Material 3, center-aligned) + liquid glass -->
+  <header class="glass mx-3 hdr r-28 px-4 pt-3 pb-3 z-10">
+    <div class="flex items-center gap-3" dir="rtl">
+      <div class="grid place-items-center size-11 rounded-2xl bg-primary-container text-primary-on shrink-0">
+        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+      </div>
+      <div class="leading-snug">
+        <div id="ttl" class="fs-20 font-bold">مترجم فارسی و عربی</div>
+        <div class="fs-13 text-muted-foreground" id="status">فارسی ← عربی</div>
+      </div>
+    </div>
+    <!-- Segmented button (shadcn Tabs structure, M3 look) -->
+    <div role="tablist" dir="rtl" class="mt-3 flex overflow-hidden rounded-full border border-border">
+      <button role="tab" id="t1" class="seg on state flex-1 py-25 fs-145 flex items-center justify-center gap-15 text-foreground">
+        <svg class="size-4 chk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="l1">فارسی ← عربی</span></button>
+      <button role="tab" id="t2" class="seg state flex-1 py-25 fs-145 flex items-center justify-center gap-15 text-foreground border-r border-border">
+        <svg class="size-4 chk hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span id="l2">عربی ← فارسی</span></button>
+    </div>
+  </header>
+
+  <main id="chat" class="flex flex-col gap-2 px-3 py-4">
+    <div id="welcome" class="bubble in glass max-w-84 self-start r-22 rounded-bl-md px-4 py-25 fs-165 leading-8" dir="rtl">
+      سلام! 👋 متن یا صدایتان را بفرستید تا ترجمه کنم.<br>جهت ترجمه را از بالا انتخاب کنید و برای ورودی صوتی روی میکروفون بزنید.
+    </div>
+  </main>
+
+  <!-- Composer -->
+  <div class="flex items-end gap-2 px-3 pt-2 compose" dir="ltr">
+    <div class="glass glass-strong flex-1 r-28 px-4 py-2">
+      <textarea id="src" rows="1" dir="auto" placeholder="پیام" class="block w-full max-h-36 fs-17 leading-8 text-foreground ph-muted"></textarea>
+    </div>
+    <button id="act" aria-label="میکروفون" class="fab state glass-btn grid place-items-center size-14 shrink-0 r-18 bg-primary text-primary-foreground shadow-lg transition-transform press">
+      <svg id="icMic" class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      <svg id="icSend" class="size-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+    </button>
+  </div>
+</div>
+
+<div id="toast" class="snack fixed left-half bottom-28 rounded-xl bg-inverse text-inverse-foreground px-4 py-25 text-sm shadow-lg"></div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var fa=true, busy=false, MAX=3000, ctrl=null;
+  var chat=$('chat'), src=$('src'), act=$('act'), toastEl=$('toast');
+
+
+  var STR={
+    fa:{title:'مترجم فارسی و عربی',t1:'فارسی ← عربی',t2:'عربی ← فارسی',ph:'پیام',mic:'میکروفون',
+      welcome:'سلام! 👋 متن یا صدایتان را بفرستید تا ترجمه کنم.<br>جهت ترجمه را از بالا انتخاب کنید و برای ورودی صوتی روی میکروفون بزنید.',
+      copy:'کپی',copied:'کپی شد',copyfail:'کپی نشد',max:'حداکثر ۳۰۰۰ نویسه',nosr:'مرورگر شما از ورودی صوتی پشتیبانی نمی‌کند',
+      denied:'اجازه‌ی میکروفون داده نشده',recfail:'ضبط صدا ناموفق بود',
+      rate:'سهمیه‌ی رایگان سرویس تمام شده؛ کمی بعد دوباره تلاش کنید.',fail:'ترجمه انجام نشد. اینترنت را بررسی و دوباره تلاش کنید.'},
+    ar:{title:'مترجم الفارسية والعربية',t1:'الفارسية ← العربية',t2:'العربية ← الفارسية',ph:'رسالة',mic:'الميكروفون',
+      welcome:'مرحبًا! 👋 أرسل نصك أو صوتك وسأترجمه لك.<br>اختر اتجاه الترجمة من الأعلى، واضغط على الميكروفون للإدخال الصوتي.',
+      copy:'نسخ',copied:'تم النسخ',copyfail:'تعذّر النسخ',max:'الحد الأقصى ٣٠٠٠ حرف',nosr:'المتصفح لا يدعم الإدخال الصوتي',
+      denied:'لم يتم السماح باستخدام الميكروفون',recfail:'فشل تسجيل الصوت',
+      rate:'انتهت الحصة المجانية للخدمة؛ حاول مرة أخرى لاحقًا.',fail:'تعذّرت الترجمة. تحقق من الاتصال وحاول مجددًا.'}
+  };
+  function S(k){return STR[fa?'fa':'ar'][k]}
+  function applyLang(){
+    $('ttl').textContent=S('title');$('l1').textContent=S('t1');$('l2').textContent=S('t2');
+    $('status').textContent=fa?S('t1'):S('t2');
+    $('welcome').innerHTML=S('welcome');
+    src.placeholder=S('ph');act.setAttribute('aria-label',S('mic'));
+    document.title=S('title');document.documentElement.lang=fa?'fa':'ar';
+  }
+  function toast(t){toastEl.textContent=t;toastEl.classList.add('show');setTimeout(function(){toastEl.classList.remove('show')},1800)}
+  function now(){return new Date().toLocaleTimeString(fa?'fa-IR':'ar-EG',{hour:'2-digit',minute:'2-digit'})}
+  function scroll(){chat.scrollTop=chat.scrollHeight}
+
+  function setDir(v){
+    fa=v;
+    [['t1',v],['t2',!v]].forEach(function(p){
+      var b=$(p[0]);b.classList.toggle('on',p[1]);b.querySelector('.chk').classList.toggle('hidden',!p[1]);
+      b.setAttribute('aria-selected',p[1]);
+    });
+    applyLang();
+    src.focus();
+  }
+  $('t1').onclick=function(){setDir(true)};
+  $('t2').onclick=function(){setDir(false)};
+
+  var BASE='bubble glass max-w-84 r-22 px-4 pt-25 pb-15 fs-165 leading-8 whitespace-pre-wrap break-words ';
+  function bubble(cls,text,withMeta){
+    var d=document.createElement('div');
+    d.className=BASE+cls+(cls.indexOf('out')>-1?' self-end rounded-br-md':' self-start rounded-bl-md');
+    var t=document.createElement('div');t.dir='auto';t.style.unicodeBidi='plain-text';t.textContent=text;d.appendChild(t);
+    if(withMeta){
+      var m=document.createElement('div');m.dir='rtl';m.className='flex items-center justify-end gap-3 fs-115 text-muted-foreground mt-05';
+      if(cls.indexOf('in')===0){
+        var b=document.createElement('button');b.className='state flex items-center gap-1 text-primary rounded-full px-2 py-05 fs-12';
+        b.innerHTML='<svg class="size-35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>'+S('copy');
+        b.onclick=function(){copy(t.textContent)};m.appendChild(b);
+      }
+      var s=document.createElement('span');s.textContent=now()+(cls.indexOf('out')>-1?' ✓✓':'');m.appendChild(s);
+      d.appendChild(m);
+    }
+    chat.appendChild(d);scroll();return d;
+  }
+  function copy(t){
+    try{navigator.clipboard.writeText(t).then(function(){toast(S('copied'))},function(){toast(S('copyfail'))})}catch(e){toast(S('copyfail'))}
+  }
+
+  // ----- translation (MyMemory) -----
+  function chunks(line){
+    var parts=line.split(/(?<=[.!?؟؛۔])\s+/),res=[],cur='';
+    parts.forEach(function(p){
+      while(p.length>450){if(cur){res.push(cur);cur='';}res.push(p.slice(0,450));p=p.slice(450);}
+      if((cur+' '+p).trim().length>450){res.push(cur);cur=p;}else{cur=(cur+' '+p).trim();}
+    });
+    if(cur)res.push(cur);return res;
+  }
+  async function tr(q,pair){
+    var r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(q)+'&langpair='+encodeURIComponent(pair),{signal:ctrl.signal});
+    if(r.status===429){var e=new Error('rate');e.code='rate';throw e}
+    var j=await r.json();
+    if(String(j.responseStatus)==='429'){var e2=new Error('rate');e2.code='rate';throw e2}
+    if(String(j.responseStatus)!=='200')throw new Error('fail');
+    return (j.responseData.translatedText||'').replace(/&#39;/g,'’').replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+  }
+  async function translate(text,pair,onProgress){
+    var lines=text.split('\n'),done=[];
+    for(var i=0;i<lines.length;i++){
+      var ln=lines[i].trim();
+      if(!ln){done.push('');continue;}
+      var cs=chunks(ln),parts=[];
+      for(var k=0;k<cs.length;k++){parts.push(await tr(cs[k],pair));onProgress(done.concat([parts.join(' ')]).join('\n'));}
+      done.push(parts.join(' '));
+    }
+    return done.join('\n').trim();
+  }
+
+  async function send(){
+    var text=src.value.trim();
+    if(!text||busy)return;
+    if(text.length>MAX){toast(S('max'));return}
+    busy=true;
+    var pair=fa?'fa|ar':'ar|fa';
+    bubble('out',text,true);
+    src.value='';grow();upd();
+    var d=document.createElement('div');
+    d.className=BASE+'in self-start rounded-bl-md';
+    d.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
+    chat.appendChild(d);scroll();
+    ctrl=new AbortController();
+    try{
+      var res=await translate(text,pair,function(p){d.textContent=p;d.dir='auto';scroll();});
+      d.remove();bubble('in',res||'…',true);
+    }catch(e){
+      d.remove();
+      var m=bubble('in',e.code==='rate'?S('rate'):S('fail'),false);
+      m.dir='rtl';m.style.color='var(--destructive)';
+    }
+    busy=false;
+  }
+
+  // ----- composer -----
+  function grow(){src.style.height='auto';src.style.height=Math.min(src.scrollHeight,144)+'px'}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,on=false,base='';
+  function upd(){
+    var has=!!src.value.trim();
+    $('icMic').classList.toggle('hidden',has);$('icSend').classList.toggle('hidden',!has);
+  }
+  src.addEventListener('input',function(){grow();upd()});
+  src.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey&&window.matchMedia('(pointer:fine)').matches){e.preventDefault();send()}
+  });
+
+  function startVoice(){
+    if(!SR){toast(S('nosr'));return}
+    var failed=false;
+    rec=new SR();rec.lang=fa?'fa-IR':'ar-SA';rec.interimResults=true;rec.continuous=true;
+    base=src.value.trim()?src.value.trim()+' ':'';
+    rec.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;src.value=(base+t).slice(0,MAX);grow();upd()};
+    rec.onerror=function(e){
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){failed=true;toast(S('denied'))}
+      else if(e.error!=='no-speech'&&e.error!=='aborted'){failed=true;toast(S('recfail'))}
+    };
+    rec.onend=function(){on=false;act.classList.remove('rec');upd();if(!failed&&src.value.trim())send()};
+    try{rec.start();on=true;act.classList.add('rec')}catch(x){}
+  }
+  act.addEventListener('click',function(){
+    if(on){rec.stop();return}
+    if(src.value.trim())send();else startVoice();
+  });
+  upd();applyLang();
+})();
+</script>
+</body>
+</html>
